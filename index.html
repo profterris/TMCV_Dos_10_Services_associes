@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices – Mettre en œuvre les services associés</title>
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:        #f5f6fa;
+  --surface:   #ffffff;
+  --card:      #ffffff;
+  --border:    #e1e4ec;
+  --border-hi: #c5cbdb;
+  --text:      #1f2433;
+  --text-dim:  #5e6580;
+  --accent:    #e0a100;
+  --green:     #1f8f47;
+  --red:       #c63a3a;
+  --blue:      #2f73b8;
+  --purple:    #7a4fb5;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --radius:    10px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(135deg, #ffffff 0%, #eef1f8 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 24px 36px;
+  text-align: center;
+}
+.site-header .kicker {
+  display: inline-block;
+  background: var(--accent);
+  color: #1f2433;
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 3px;
+  margin-bottom: 18px;
+}
+.site-header h1 {
+  font-family: var(--font-head);
+  font-size: clamp(22px, 5vw, 38px);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+.site-header .sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 300;
+  max-width: 560px;
+  margin: 0 auto 24px;
+}
+
+/* ── NAV ANCRES ──────────────────────────────────────────── */
+.nav-anchors {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nav-anchors a {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 16px;
+  text-decoration: none;
+  transition: border-color .15s, color .15s;
+}
+.nav-anchors a:hover { border-color: var(--accent); color: #9a6b00; }
+
+/* ── CONTENEUR PRINCIPAL ─────────────────────────────────── */
+main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ── TITRE DE BLOC ───────────────────────────────────────── */
+.bloc-titre {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 52px 0 6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.bloc-titre:first-child { margin-top: 0; }
+.bloc-titre .icone {
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.bloc-titre h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* ── MÉMO FORMULE ────────────────────────────────────────── */
+.memo {
+  background: #effaf2;
+  border: 1px solid #c8e8d2;
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+.memo .memo-titre {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.memo code {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #d6eedd;
+  border-radius: 5px;
+  padding: 8px 14px;
+  color: #17643a;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  margin: 4px 0;
+}
+.memo .note {
+  color: var(--text-dim);
+  font-size: 12.5px;
+  margin-top: 6px;
+}
+
+/* ── CARTE EXERCICE ──────────────────────────────────────── */
+.exo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color .15s;
+  box-shadow: 0 1px 2px rgba(31,36,51,.04);
+}
+.exo-card:hover { border-color: var(--border-hi); }
+
+.exo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.exo-header::-webkit-details-marker { display: none; }
+
+.exo-num {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  min-width: 40px;
+}
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.badge-1 { background: #e8f7ed; color: var(--green); border: 1px solid #bfe5cb; }
+.badge-2 { background: #fff6dc; color: #9a6b00; border: 1px solid #f0d98f; }
+.badge-3 { background: #fdeaea; color: var(--red); border: 1px solid #f2c0c0; }
+.badge-exam { background: #f2ecfb; color: var(--purple); border: 1px solid #d9c8f0; }
+
+.exo-titre-txt {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+.chevron {
+  color: var(--text-dim);
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+details[open] .chevron { transform: rotate(180deg); }
+
+/* ── CORPS DE L'EXERCICE ─────────────────────────────────── */
+.exo-body {
+  padding: 0 18px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.contexte {
+  background: #eef4fb;
+  border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.contexte strong { color: #12305a; }
+
+.tableau-donnees {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.tableau-donnees th {
+  background: #f0f2f8;
+  color: var(--text-dim);
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.tableau-donnees td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+.tableau-donnees tr:last-child td { border-bottom: none; }
+.tableau-donnees td.num { font-weight: 600; color: #12305a; }
+.tableau-donnees tr.total-row td {
+  background: #f0f2f8;
+  font-family: var(--font-head);
+  font-weight: 700;
+  color: #9a6b00;
+}
+
+.questions { margin: 18px 0 0; }
+.question {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+.question .q-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: #1f2433;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 11px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.question p { font-size: 14px; margin: 0; }
+
+/* ── ORDRE DE GRANDEUR ───────────────────────────────────── */
+.ordre-grandeur {
+  background: #fff8e1;
+  border: 1px solid #f0dc9a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #7a5600;
+  margin: 12px 0 0;
+}
+.ordre-grandeur::before { content: "💡 "; }
+
+/* ── BOUTON CORRECTION ───────────────────────────────────── */
+.btn-corrige {
+  background: none;
+  border: 1px solid var(--border-hi);
+  border-radius: 6px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  margin-top: 18px;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-corrige:hover { border-color: var(--green); color: var(--green); }
+
+/* ── CORRECTION ──────────────────────────────────────────── */
+.correction {
+  display: none;
+  background: #effaf2;
+  border: 1px solid #c8e8d2;
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.8;
+}
+.correction.visible { display: block; }
+.correction .corr-etape {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d3ecdb;
+}
+.correction .corr-etape:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.correction .c-num {
+  display: inline-block;
+  background: var(--green);
+  color: #ffffff;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  margin-right: 6px;
+}
+.correction code {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #d6eedd;
+  border-radius: 4px;
+  padding: 6px 12px;
+  color: #17643a;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  margin: 5px 0;
+}
+.correction .res {
+  font-family: var(--font-head);
+  font-weight: 700;
+  color: var(--text);
+}
+.correction .conclu {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #2f5e3e;
+  font-style: italic;
+}
+.correction .tableau-corr {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin: 8px 0;
+}
+.correction .tableau-corr th {
+  background: #dff2e5;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  text-align: left;
+}
+.correction .tableau-corr td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #d3ecdb;
+  color: #2f4a38;
+  vertical-align: top;
+}
+.correction .tableau-corr td.val {
+  font-weight: 700;
+  color: var(--green);
+}
+.correction .tableau-corr tr.t-total td {
+  background: #dff2e5;
+  font-weight: 700;
+  color: #9a6b00;
+}
+
+/* ── SÉPARATEUR ──────────────────────────────────────────── */
+hr.section-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 54px 0 0;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  background: var(--surface);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .exo-titre-txt { font-size: 13px; }
+  .contexte { font-size: 13px; }
+  .tableau-donnees { font-size: 12px; }
+  .tableau-donnees, .correction .tableau-corr { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="kicker">🧾 Exercices E32 – Bac pro MCV</div>
+  <h1>Mettre en œuvre<br>les services associés</h1>
+  <p class="sub">16 exercices progressifs – financement, livraison, relances et mesure de l'activité du vendeur</p>
+  <nav class="nav-anchors">
+    <a href="#financement">💳 Financement (4 ex.)</a>
+    <a href="#prestataire">🚚 Prestataire &amp; transmission (4 ex.)</a>
+    <a href="#suivi">📨 Suivi &amp; relances (3 ex.)</a>
+    <a href="#activite">📊 Activité du vendeur (3 ex.)</a>
+    <a href="#complet">🏁 Sujets complets (2 ex.)</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 1 – MODALITÉS DE FINANCEMENT
+══════════════════════════════════════════════════════════ -->
+<div class="bloc-titre" id="financement">
+  <span class="icone">💳</span>
+  <h2>Bloc 1 – Identifier et comparer les modalités de financement</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Paiement comptant  |  paiement en plusieurs fois sans frais (gratuit)  |  crédit (payant)</code>
+  <code>Mensualité = montant à payer ÷ nombre d'échéances</code>
+  <code>Montant total dû = mensualité × nombre de mensualités</code>
+  <code>Coût du crédit = montant total dû − prix d'achat</code>
+  <p class="note">Crédit à la consommation : de <strong>200 € à 75 000 €</strong>, remboursé sur <strong>plus de 3 mois</strong>. Le <strong>TAEG</strong> (taux annuel effectif global) regroupe l'ensemble des frais du crédit : intérêts, frais de dossier, frais d'intermédiaire, assurance obligatoire. Un crédit se compare avec trois éléments : le TAEG, la durée et le montant emprunté.</p>
+</div>
+
+<!-- EX 1 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 1</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Reconnaître le mode de financement et le contenu du TAEG</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Vous êtes vendeur(se) dans un magasin d'articles de sport. Voici cinq règlements réalisés dans la journée :<br><br>
+      <strong>a.</strong> Un client règle une paire de chaussures de 89 € par carte bancaire en caisse.<br>
+      <strong>b.</strong> Une cliente achète un vélo de 1 200 € payé en 3 fois sans frais par carte bancaire (échéances sur 60 jours).<br>
+      <strong>c.</strong> Un client finance un tapis de course de 1 464 € sur 15 mois, au TAEG de 9,8 %.<br>
+      <strong>d.</strong> Une cliente paie un kayak de 640 € en 4 fois sans frais (échéances sur 90 jours).<br>
+      <strong>e.</strong> Un client paie un ballon de 25 € en espèces.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Classez chaque règlement dans l'une des trois catégories : paiement comptant, paiement en plusieurs fois sans frais, crédit payant.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Lequel de ces règlements correspond à un crédit à la consommation ? Justifiez avec le montant et la durée.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Parmi les éléments suivants, lesquels sont inclus dans le TAEG : intérêts bancaires, frais de dossier, prix du produit, assurance obligatoire, frais de livraison, frais d'un courtier ?</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Repère :</strong> un crédit à la consommation commence à 200 € et dure plus de 3 mois (environ 90 jours). Un paiement étalé sur 60 ou 90 jours n'en est donc pas un.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Règlement</th><th>Catégorie</th></tr></thead>
+          <tbody>
+            <tr><td>a. Chaussures 89 € par CB</td><td class="val">Paiement comptant</td></tr>
+            <tr><td>b. Vélo 1 200 € en 3 fois</td><td class="val">Plusieurs fois sans frais</td></tr>
+            <tr><td>c. Tapis 1 464 € sur 15 mois</td><td class="val">Crédit payant</td></tr>
+            <tr><td>d. Kayak 640 € en 4 fois</td><td class="val">Plusieurs fois sans frais</td></tr>
+            <tr><td>e. Ballon 25 € en espèces</td><td class="val">Paiement comptant</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="res">Seul le règlement c est un crédit à la consommation.</p>
+        <p class="conclu">Le montant (1 464 €) est compris entre 200 € et 75 000 € et la durée (15 mois) dépasse 3 mois. Les règlements b et d sont étalés sur 90 jours au plus : ce sont des facilités de paiement gratuites.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Inclus dans le TAEG : intérêts bancaires, frais de dossier, assurance obligatoire, frais d'un courtier.</p>
+        <p class="conclu">Le prix du produit et les frais de livraison ne sont pas des frais liés au crédit : ils n'entrent pas dans le TAEG.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 2 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 2</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Calculer des échéances de paiement sans frais</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Une cliente souhaite acheter un rameur à <strong>1 080 € TTC</strong>. Le magasin propose le paiement en <strong>3 fois</strong> ou en <strong>4 fois sans frais</strong> par carte bancaire (TAEG 0 %).<br><br>
+      La cliente précise qu'elle ne veut pas payer plus de <strong>300 € par échéance</strong>.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le montant de chaque échéance pour un paiement en 3 fois, puis en 4 fois.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le montant total payé dans chaque cas. Quel est le coût de ce financement ?</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Quelle solution proposez-vous à la cliente ? Justifiez.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> 1 080 € divisé en 3 ou 4 : les échéances sont entre 250 € et 400 €.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>3 fois : 1 080 ÷ 3 = 360 €</code>
+        <code>4 fois : 1 080 ÷ 4 = 270 €</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <code>3 × 360 = 1 080 €  |  4 × 270 = 1 080 €</code>
+        <p class="res">Coût du financement = <strong>0 €</strong></p>
+        <p class="conclu">Le paiement en plusieurs fois sans frais est un service associé gratuit pour le client : il paie exactement le prix du produit.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Paiement en 4 fois sans frais (4 échéances de 270 €).</p>
+        <p class="conclu">C'est la seule solution qui respecte la limite de 300 € par échéance fixée par la cliente, sans aucun frais.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 3 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 3</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Calculer et comparer le coût de plusieurs financements</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      M. Grasset souhaite acheter un tapis de course à <strong>1 464 € TTC</strong>. Il veut des mensualités <strong>inférieures à 120 €</strong>. Le magasin lui remet la simulation suivante :
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Solution</th><th>Mensualité</th><th>TAEG</th></tr></thead>
+      <tbody>
+        <tr><td>4 fois sans frais</td><td class="num">366,00 €</td><td>0 %</td></tr>
+        <tr><td>Crédit sur 15 mois</td><td class="num">103,82 €</td><td>9,8 %</td></tr>
+        <tr><td>Crédit sur 24 mois</td><td class="num">67,14 €</td><td>9,8 %</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le montant total dû pour chaque solution.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le coût du crédit pour chaque solution.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Quelle solution recommandez-vous à M. Grasset ? Justifiez en deux phrases.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> plus la durée est longue, plus la mensualité baisse… mais plus le coût total du crédit augmente. Les coûts sont de l'ordre de la centaine d'euros.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Solution</th><th>Calcul</th><th>Montant total dû</th></tr></thead>
+          <tbody>
+            <tr><td>4 fois sans frais</td><td>366,00 × 4</td><td class="val">1 464,00 €</td></tr>
+            <tr><td>Crédit 15 mois</td><td>103,82 × 15</td><td class="val">1 557,30 €</td></tr>
+            <tr><td>Crédit 24 mois</td><td>67,14 × 24</td><td class="val">1 611,36 €</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <code>4 fois : 1 464,00 − 1 464 = 0 €</code>
+        <code>15 mois : 1 557,30 − 1 464 = 93,30 €</code>
+        <code>24 mois : 1 611,36 − 1 464 = 147,36 €</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Crédit sur 15 mois (103,82 € par mois).</p>
+        <p class="conclu">Le paiement en 4 fois est gratuit mais sa mensualité (366 €) dépasse la limite du client. Parmi les deux crédits qui respectent la limite de 120 €, celui sur 15 mois coûte 54,06 € de moins que celui sur 24 mois.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 4 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 4</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Choisir la solution adaptée et lister les pièces justificatives</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Votre magasin propose les solutions de financement suivantes :
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Solution</th><th>Montant d'achat</th><th>Durée</th><th>Pièces justificatives</th><th>TAEG</th></tr></thead>
+      <tbody>
+        <tr><td><strong>3 ou 4 fois par CB</strong></td><td>100 à 1 500 €</td><td>moins de 90 jours</td><td>carte de fidélité, pièce d'identité, carte bancaire valable plus de 90 jours</td><td>0 %</td></tr>
+        <tr><td><strong>Crédit A</strong></td><td>200 à 3 000 €</td><td>5 à 60 mois</td><td>carte de fidélité, pièce d'identité, RIB au nom et à l'adresse actuelle du client (sinon justificatif de domicile de moins de 3 mois)</td><td>9,8 %</td></tr>
+        <tr><td><strong>Crédit B</strong></td><td>3 000 à 6 000 €</td><td>5 à 60 mois</td><td>carte de fidélité, pièce d'identité, RIB, justificatif de domicile, dernier bulletin de salaire (ou avis d'imposition pour les non-salariés)</td><td>9,8 %</td></tr>
+      </tbody>
+    </table>
+    <div class="contexte">
+      Quatre clients se présentent :<br><br>
+      <strong>Client 1 :</strong> vélo électrique à 2 400 €, souhaite payer sur 12 mois.<br>
+      <strong>Client 2 :</strong> tente à 450 €, souhaite payer en 3 fois sans frais.<br>
+      <strong>Client 3 :</strong> appareil de musculation à 4 200 €, souhaite payer sur 36 mois.<br>
+      <strong>Client 4 :</strong> sac de randonnée à 180 €, souhaite payer sur 10 mois.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Pour chaque client, indiquez la solution adaptée (ou expliquez pourquoi sa demande n'est pas possible).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Listez les pièces justificatives à demander aux clients 1 et 3.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Quelle solution pouvez-vous proposer au client 4 ? Calculez ses échéances.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Méthode :</strong> vérifiez d'abord la tranche de montant, puis la durée souhaitée.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Client</th><th>Solution</th><th>Justification</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="val">Crédit A</td><td>2 400 € entre 200 et 3 000 €, 12 mois entre 5 et 60 mois</td></tr>
+            <tr><td>2</td><td class="val">3 fois par CB</td><td>450 € entre 100 et 1 500 €, 3 échéances de 150 €</td></tr>
+            <tr><td>3</td><td class="val">Crédit B</td><td>4 200 € entre 3 000 et 6 000 €, 36 mois entre 5 et 60 mois</td></tr>
+            <tr><td>4</td><td class="val">Demande impossible</td><td>180 € est inférieur au montant minimum d'un crédit (200 €)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p><strong>Client 1 :</strong> carte de fidélité, pièce d'identité (carte d'identité, passeport ou titre de séjour en cours de validité), RIB à son nom et à son adresse actuelle (ou justificatif de domicile de moins de 3 mois).</p>
+        <p><strong>Client 3 :</strong> carte de fidélité, pièce d'identité, RIB, justificatif de domicile, dernier bulletin de salaire (ou avis d'imposition).</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <code>3 fois : 180 ÷ 3 = 60 €  |  4 fois : 180 ÷ 4 = 45 €</code>
+        <p class="res">Proposition : paiement en 3 ou 4 fois sans frais.</p>
+        <p class="conclu">Le client ne peut pas étaler son paiement sur 10 mois, mais il peut le répartir sans frais en 4 échéances de 45 €.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 2 – PRESTATAIRE & TRANSMISSION
+══════════════════════════════════════════════════════════ -->
+<hr class="section-sep">
+<div class="bloc-titre" id="prestataire">
+  <span class="icone">🚚</span>
+  <h2>Bloc 2 – Sélectionner le prestataire, collecter et transmettre les informations</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Critères de choix d'un prestataire : fiabilité – prix – respect des délais</code>
+  <code>Score pondéré = (note × coefficient) + (note × coefficient) + …</code>
+  <code>Rigueur : contrôle des documents → retranscription des informations → respect des procédures</code>
+  <p class="note">Le choix du transporteur est stratégique : la qualité de la livraison agit directement sur l'image de l'entreprise. Le commerçant (donneur d'ordre) reste <strong>responsable</strong> de la prestation assurée par son prestataire.</p>
+</div>
+
+<!-- EX 5 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 5</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Associer chaque information à un critère de choix</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Votre responsable a relevé les informations suivantes sur plusieurs transporteurs :<br><br>
+      <strong>a.</strong> Prend en charge les produits fragiles avec un emballage renforcé.<br>
+      <strong>b.</strong> Livraison au pas-de-porte facturée 25 €.<br>
+      <strong>c.</strong> Prise de rendez-vous avec le client sous 3 jours.<br>
+      <strong>d.</strong> 0,5 % de colis endommagés sur l'année.<br>
+      <strong>e.</strong> Respecte la chaîne du froid.<br>
+      <strong>f.</strong> Remise de 10 % au-delà de 50 livraisons par mois.<br>
+      <strong>g.</strong> Livraison le lendemain entre 19 h et 22 h pour toute commande passée avant minuit.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Associez chaque information à l'un des trois critères : fiabilité, prix, respect des délais.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Expliquez pourquoi le choix du transporteur est un choix stratégique pour un magasin.</p>
+      </div>
+    </div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Critère</th><th>Informations</th></tr></thead>
+          <tbody>
+            <tr><td>Fiabilité</td><td class="val">a, d, e</td></tr>
+            <tr><td>Prix</td><td class="val">b, f</td></tr>
+            <tr><td>Respect des délais</td><td class="val">c, g</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="conclu">La qualité de la livraison a un effet direct sur l'image du magasin et sur la satisfaction du client. De plus, le magasin reste responsable de la prestation de son transporteur devant le client. Enfin, les délais de livraison sont un argument face à la concurrence.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 6 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 6</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Comparer trois transporteurs avec une grille pondérée</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Votre magasin doit choisir un transporteur pour livrer les tables de ping-pong au pas-de-porte. Voici les offres reçues :
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Transporteur</th><th>Prix</th><th>Prise de RDV</th><th>Taux de litiges</th></tr></thead>
+      <tbody>
+        <tr><td>Prévoté</td><td class="num">25 €</td><td>sous 4 jours</td><td>2 %</td></tr>
+        <tr><td>Transexpress</td><td class="num">19 €</td><td>sous 7 jours</td><td>6 %</td></tr>
+        <tr><td>LivrO</td><td class="num">35 €</td><td>sous 2 jours</td><td>1 %</td></tr>
+      </tbody>
+    </table>
+    <div class="contexte">
+      Votre responsable a attribué les notes suivantes (sur 5) et fixé les coefficients : <strong>fiabilité × 3</strong>, <strong>délais × 2</strong>, <strong>prix × 1</strong>.
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Critère</th><th>Coef.</th><th>Prévoté</th><th>Transexpress</th><th>LivrO</th></tr></thead>
+      <tbody>
+        <tr><td>Fiabilité</td><td>3</td><td>4</td><td>1</td><td>5</td></tr>
+        <tr><td>Respect des délais</td><td>2</td><td>3</td><td>1</td><td>5</td></tr>
+        <tr><td>Prix</td><td>1</td><td>4</td><td>5</td><td>2</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le score pondéré de chaque transporteur (sur 30).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Quel transporteur recommandez-vous ? Justifiez.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Pourquoi le transporteur le moins cher n'est-il pas forcément le meilleur choix ?</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Vérification :</strong> le score maximal possible est (5 × 3) + (5 × 2) + (5 × 1) = 30.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Transporteur</th><th>Calcul</th><th>Score</th></tr></thead>
+          <tbody>
+            <tr><td>Prévoté</td><td>(4 × 3) + (3 × 2) + (4 × 1) = 12 + 6 + 4</td><td class="val">22 / 30</td></tr>
+            <tr><td>Transexpress</td><td>(1 × 3) + (1 × 2) + (5 × 1) = 3 + 2 + 5</td><td class="val">10 / 30</td></tr>
+            <tr><td>LivrO</td><td>(5 × 3) + (5 × 2) + (2 × 1) = 15 + 10 + 2</td><td class="val">27 / 30</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="res">LivrO obtient le meilleur score (27 / 30).</p>
+        <p class="conclu">LivrO est le plus cher, mais c'est le plus fiable (1 % de litiges) et le plus rapide (rendez-vous sous 2 jours), qui sont les deux critères les plus importants pour le magasin.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="conclu">Transexpress est le moins cher, mais avec 6 % de litiges et des délais longs, il risque de provoquer des réclamations, de dégrader l'image du magasin et d'entraîner des frais de remplacement ou de remboursement.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 7 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 7</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Calculer le montant total et informer le client par écrit</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Le <strong>lundi 2 novembre</strong>, M. Grasset achète deux articles et demande leur livraison :
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Produit</th><th>Prix</th><th>Mode de livraison</th><th>Transporteur</th><th>Délai</th><th>Coût</th></tr></thead>
+      <tbody>
+        <tr><td>Tapis de course</td><td class="num">999 €</td><td>à domicile, dans la pièce de son choix, sans montage</td><td>VIR</td><td>prise de RDV sous 3 jours</td><td class="num">50 €</td></tr>
+        <tr><td>Table de ping-pong</td><td class="num">465 €</td><td>à domicile, au pas-de-porte sur RDV</td><td>Prévoté</td><td>prise de RDV sous 4 jours</td><td class="num">25 €</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le montant total de l'achat, livraison comprise.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Indiquez, pour chaque produit, le jour au plus tard où le transporteur doit contacter le client.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Rédigez le message écrit que vous remettez au client pour récapituler les modalités de livraison.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> deux produits pour un peu moins de 1 500 € et deux livraisons pour moins de 100 €.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>Produits : 999 + 465 = 1 464 €</code>
+        <code>Livraisons : 50 + 25 = 75 €</code>
+        <code>Total : 1 464 + 75 = 1 539 €</code>
+        <p class="res">Montant total = <strong>1 539 €</strong>, dont 75 € de livraison</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <code>Tapis (VIR) : lundi + 3 jours = jeudi 5 novembre</code>
+        <code>Table (Prévoté) : lundi + 4 jours = vendredi 6 novembre</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="conclu">« Le montant total de votre achat s'élève à 1 539 €, dont 75 € de livraison. Votre tapis de course sera livré à votre domicile, dans la pièce de votre choix, par la société VIR, qui vous contactera d'ici jeudi 5 novembre pour fixer un rendez-vous. Le montage reste à votre charge. Votre table de ping-pong sera livrée au pas-de-porte par le transporteur Prévoté, qui vous contactera d'ici vendredi 6 novembre. »</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 8 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 8</span>
+    <span class="badge badge-3">⬆⬆⬆ niveau examen</span>
+    <span class="exo-titre-txt">Contrôler un ordre de livraison avant envoi</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      <strong>Fiche client :</strong> M. Gaël Grasset – 2 rue Cabernet, 34370 Cazouls-lès-Béziers – ggrasset@gmail.com – 06 17 69 02 36.<br>
+      <strong>Article :</strong> tapis de course Intense Run Domyos.<br>
+      <strong>Service vendu :</strong> livraison à domicile dans la pièce de son choix, sans montage.<br>
+      <strong>Transporteur retenu :</strong> VIR (rpro@vir.com).<br><br>
+      Un stagiaire a préparé le mail suivant :<br><br>
+      <em>À : contact@prevote.com<br>
+      Objet : Ordre de livraison magasin de Béziers<br>
+      Madame, Monsieur,<br>
+      Nous vous remercions de prendre contact avec le client dont la fiche suit pour assurer la livraison d'un article de sport.<br>
+      Type de livraison : à domicile, au pas-de-porte<br>
+      Nom : Grasset / Prénom : Gaël<br>
+      Adresse : 2 rue Cabernet 34730 Cazouls-lès-Béziers<br>
+      Adresse mail : ggrasset@gmail.com<br>
+      Réf. article : tapis de course<br>
+      Cordialement,</em>
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Relevez les erreurs et les oublis de ce mail (5 au total).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Rédigez l'ordre de livraison corrigé.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Quelles sont les trois étapes à respecter pour transmettre des informations sans erreur ?</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Méthode :</strong> comparez ligne par ligne le mail avec la fiche client, l'article et le service vendu.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Élément</th><th>Erreur ou oubli</th><th>Correction</th></tr></thead>
+          <tbody>
+            <tr><td>Destinataire</td><td>mauvais transporteur</td><td class="val">rpro@vir.com</td></tr>
+            <tr><td>Type de livraison</td><td>pas-de-porte</td><td class="val">dans la pièce de son choix, sans montage</td></tr>
+            <tr><td>Code postal</td><td>34730</td><td class="val">34370</td></tr>
+            <tr><td>Téléphone</td><td>absent</td><td class="val">06 17 69 02 36</td></tr>
+            <tr><td>Référence article</td><td>imprécise</td><td class="val">tapis de course Intense Run Domyos</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="conclu">À : rpro@vir.com<br>
+        Objet : Ordre de livraison magasin de Béziers<br>
+        Madame, Monsieur,<br>
+        Nous vous remercions de prendre contact avec le client dont la fiche suit pour assurer la livraison d'un article de sport.<br>
+        Type de livraison : à domicile, dans la pièce de son choix, sans montage<br>
+        Nom : Grasset / Prénom : Gaël<br>
+        Adresse : 2 rue Cabernet 34370 Cazouls-lès-Béziers<br>
+        Adresse mail : ggrasset@gmail.com<br>
+        Téléphone : 06 17 69 02 36<br>
+        Réf. article : tapis de course Intense Run Domyos<br>
+        Dans l'attente des informations sur le suivi de ce dossier.<br>
+        Cordialement,<br>
+        [Signature]</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Contrôler les documents – retranscrire les informations avec exactitude – respecter les procédures (délais, formulaires, destinataires).</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 3 – SUIVI & RELANCES
+══════════════════════════════════════════════════════════ -->
+<hr class="section-sep">
+<div class="bloc-titre" id="suivi">
+  <span class="icone">📨</span>
+  <h2>Bloc 3 – Suivre l'exécution des services et effectuer les relances</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo</div>
+  <code>Jours ouvrés (dans ces exercices) = du lundi au vendredi, hors jours fériés</code>
+  <code>Date limite = date de l'ordre + nombre de jours prévus au contrat</code>
+  <code>Date du jour &gt; date limite et prestation non réalisée → relance</code>
+  <p class="note">Le vendeur reste l'interlocuteur principal du client. Le magasin est responsable de la bonne exécution du contrat de vente, même si la livraison est confiée à un transporteur : il doit livrer à nouveau ou rembourser le client, puis se retourner contre le transporteur.</p>
+</div>
+
+<!-- EX 9 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 9</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Calculer une date limite et décider d'une relance</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      <strong>Cas A :</strong> un ordre de livraison est envoyé au transporteur le <strong>mercredi 18 mars</strong>. Le contrat prévoit une prise de rendez-vous avec le client sous <strong>4 jours ouvrés</strong>. Le <strong>mercredi 25 mars</strong>, le client vous indique qu'il n'a reçu aucun appel.<br><br>
+      <strong>Cas B :</strong> un ordre de livraison est envoyé le <strong>lundi 2 novembre</strong>. Le contrat prévoit une prise de rendez-vous sous <strong>3 jours ouvrés</strong>. Le <strong>mercredi 4 novembre</strong>, le client vous indique qu'il n'a reçu aucun appel.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Pour chaque cas, déterminez la date limite de prise de rendez-vous.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Faut-il relancer le transporteur ? Justifiez pour chaque cas.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Attention :</strong> le samedi et le dimanche ne comptent pas dans les jours ouvrés.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>Cas A : jeu. 19 (1) – ven. 20 (2) – lun. 23 (3) – mar. 24 (4) → mardi 24 mars</code>
+        <code>Cas B : mar. 3 (1) – mer. 4 (2) – jeu. 5 (3) → jeudi 5 novembre</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="res">Cas A : relance nécessaire. Cas B : pas de relance.</p>
+        <p class="conclu">Dans le cas A, la date limite (24 mars) est dépassée : le transporteur ne respecte pas son contrat, il faut le relancer. Dans le cas B, le transporteur a encore jusqu'au 5 novembre : on rassure le client en lui rappelant cette date.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 10 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 10</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Identifier les contrats et la responsabilité en cas de dommage</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      L'entreprise <em>LuminART</em> vend des luminaires sur son site marchand. Elle a choisi le prestataire <em>SpeedEx</em> pour livrer ses commandes.<br><br>
+      M. Rombier commande un lustre en cristal sur le site et choisit la livraison à domicile. Le lustre arrive cassé.<br><br>
+      <strong>Rappel juridique :</strong> avant la conclusion du contrat, le vendeur doit indiquer au consommateur, de façon claire, la date ou le délai de livraison. Le vendeur est responsable de la bonne exécution du contrat, qu'il livre lui-même ou qu'il fasse appel à un transporteur.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Identifiez les deux contrats en jeu. Pour chacun, précisez les parties et l'objet.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>À qui M. Rombier doit-il s'adresser ? Justifiez.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Que doit faire LuminART vis-à-vis du client, puis vis-à-vis de SpeedEx ?</p>
+      </div>
+    </div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Contrat</th><th>Parties</th><th>Objet</th></tr></thead>
+          <tbody>
+            <tr><td>Contrat de vente</td><td>LuminART (personne morale) et M. Rombier (personne physique)</td><td class="val">vente d'un lustre</td></tr>
+            <tr><td>Contrat de transport</td><td>LuminART (personne morale) et SpeedEx (personne morale)</td><td class="val">livraison des articles commandés par les clients de LuminART</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="res">M. Rombier s'adresse à LuminART.</p>
+        <p class="conclu">Il n'a signé aucun contrat avec SpeedEx. C'est LuminART, son vendeur, qui est responsable de la bonne exécution du contrat de vente, même si le dommage a eu lieu pendant le transport.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="conclu">LuminART doit livrer un nouveau lustre à ses frais ou rembourser M. Rombier. Elle peut ensuite engager la responsabilité contractuelle de SpeedEx pour obtenir réparation de son préjudice.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 11 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 11</span>
+    <span class="badge badge-3">⬆⬆⬆ niveau examen</span>
+    <span class="exo-titre-txt">Rédiger un mail de relance au transporteur</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Vous êtes stagiaire au rayon fitness. Votre tuteur, William, responsable de rayon, vous demande de relancer le transporteur.<br><br>
+      • Ordre de livraison n° <strong>BZ341526</strong> envoyé le <strong>mercredi 18 mars</strong> à Prévoté (clientpro@prevote.com)<br>
+      • Article : table de ping-pong Cornilleau Free 100X Outdoor<br>
+      • Client : M. Gaël Grasset – 2 rue Cabernet, 34370 Cazouls-lès-Béziers – ggrasset@gmail.com – 06 17 69 02 36<br>
+      • Contrat : prise de rendez-vous sous <strong>4 jours ouvrés</strong><br>
+      • Nous sommes le <strong>mercredi 25 mars</strong> : le client n'a reçu aucun appel.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Listez les informations indispensables à faire figurer dans le mail de relance.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Rédigez le mail de relance (destinataire, objet, corps du message, signature).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Quelle action devez-vous mener ensuite auprès du client ?</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Conseil :</strong> une relance efficace rappelle les faits (date, n° d'ordre), l'engagement non respecté et la demande précise, sur un ton courtois et ferme.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <p>Numéro de l'ordre de livraison, date d'envoi de l'ordre, coordonnées complètes du client, article concerné, délai prévu au contrat, constat du retard, demande d'action rapide et demande de suivi.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="conclu">De : stagiaire@magasin.fr<br>
+        À : clientpro@prevote.com<br>
+        Objet : Défaut de prise de rendez-vous – ordre de livraison BZ341526<br>
+        Madame, Monsieur,<br>
+        Le mercredi 18 mars, nous vous avons transmis l'ordre de livraison n° BZ341526 concernant une table de ping-pong Cornilleau Free 100X Outdoor pour notre client :<br>
+        M. Gaël Grasset, 2 rue Cabernet 34370 Cazouls-lès-Béziers, ggrasset@gmail.com, 06 17 69 02 36.<br>
+        Votre contrat prévoit une prise de rendez-vous sous 4 jours ouvrés, soit au plus tard le mardi 24 mars. Or, à ce jour, mercredi 25 mars, notre client n'a reçu aucun appel.<br>
+        Nous vous remercions de le contacter dans les plus brefs délais afin d'organiser la livraison et de nous confirmer la date retenue.<br>
+        Cordialement,<br>
+        [Prénom Nom], pour William, responsable du rayon fitness</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="conclu">Informer M. Grasset de la relance effectuée, s'excuser pour le retard, puis vérifier que le transporteur l'a bien contacté et que la livraison a eu lieu.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 4 – MESURER SON ACTIVITÉ
+══════════════════════════════════════════════════════════ -->
+<hr class="section-sep">
+<div class="bloc-titre" id="activite">
+  <span class="icone">📊</span>
+  <h2>Bloc 4 – Mesurer son activité de vendeur</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo formules</div>
+  <code>Moyenne = somme des valeurs ÷ nombre de valeurs</code>
+  <code>Taux d'encartés = nombre de clients encartés ÷ nombre total de clients × 100</code>
+  <code>Taux d'évolution = (valeur N − valeur N-1) ÷ valeur N-1 × 100</code>
+  <code>Prix moyen par vente = CA ÷ nombre de ventes</code>
+  <code>Taux de financement à crédit (TFC) = financement à crédit ÷ CA × 100</code>
+  <p class="note">Le vendeur rend compte de son activité avec des <strong>indicateurs de performance</strong> (CA, taux d'encartés, marge, nombre de dossiers de financement…) et des <strong>actions</strong> mises en œuvre ou à mettre en œuvre. Il compare ses résultats aux objectifs et propose des actions correctives.</p>
+</div>
+
+<!-- EX 12 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 12</span>
+    <span class="badge badge-1">⬆ décollage</span>
+    <span class="exo-titre-txt">Taux d'encartés et dossiers de financement</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Votre responsable vous fixe deux objectifs mensuels : un <strong>taux d'encartés de 40 %</strong> et <strong>10 dossiers de financement par semaine</strong> en moyenne. Voici vos résultats de février :
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Indicateur</th><th>Semaine 1</th><th>Semaine 2</th><th>Semaine 3</th><th>Semaine 4</th></tr></thead>
+      <tbody>
+        <tr><td>Clients servis</td><td>280</td><td>–</td><td>–</td><td>–</td></tr>
+        <tr><td>Clients encartés</td><td>98</td><td>–</td><td>–</td><td>–</td></tr>
+        <tr><td>Taux d'encartés</td><td>?</td><td>37 %</td><td>36 %</td><td>37 %</td></tr>
+        <tr><td>Dossiers de financement</td><td>10</td><td>8</td><td>15</td><td>6</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le taux d'encartés de la semaine 1.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le taux d'encartés moyen et le nombre moyen de dossiers de financement par semaine.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Vos objectifs sont-ils atteints ? Proposez deux actions pour progresser.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> 98 sur 280, c'est un peu plus d'un tiers. Les moyennes restent proches des valeurs hebdomadaires.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>98 ÷ 280 × 100 = 35 %</code>
+        <p class="res">Taux d'encartés semaine 1 = <strong>35 %</strong></p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <code>(35 + 37 + 36 + 37) ÷ 4 = 145 ÷ 4 = 36,25 %</code>
+        <code>(10 + 8 + 15 + 6) ÷ 4 = 39 ÷ 4 = 9,75 dossiers</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Aucun des deux objectifs n'est atteint.</p>
+        <p class="conclu">Le taux d'encartés (36,25 %) est inférieur à 40 % et le nombre moyen de dossiers (9,75) est inférieur à 10. Actions possibles : proposer systématiquement la carte de fidélité et un financement selon le montant de l'achat, suivre une formation sur les solutions de financement, demander conseil au tuteur.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 13 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 13</span>
+    <span class="badge badge-2">⬆⬆ intermédiaire</span>
+    <span class="exo-titre-txt">Évolution du chiffre d'affaires par rapport à N-1</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      L'objectif de progression du CA du rayon pour février est de <strong>+ 3 %</strong> par rapport à février N-1.
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>CA (€)</th><th>Semaine 1</th><th>Semaine 2</th><th>Semaine 3</th><th>Semaine 4</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>N-1</td><td class="num">54 200</td><td class="num">42 700</td><td class="num">57 800</td><td class="num">63 100</td><td>?</td></tr>
+        <tr><td>N</td><td class="num">56 900</td><td class="num">49 600</td><td class="num">58 800</td><td class="num">61 200</td><td>?</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le CA total de février N-1 et de février N.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le taux d'évolution de chaque semaine et du mois (arrondir à 0,01 %).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>L'objectif est-il atteint ? Commentez la semaine 4.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> les totaux sont un peu supérieurs à 200 000 €. Une baisse donne un taux d'évolution négatif.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>N-1 : 54 200 + 42 700 + 57 800 + 63 100 = 217 800 €</code>
+        <code>N : 56 900 + 49 600 + 58 800 + 61 200 = 226 500 €</code>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Période</th><th>Calcul</th><th>Évolution</th></tr></thead>
+          <tbody>
+            <tr><td>Semaine 1</td><td>(56 900 − 54 200) ÷ 54 200 × 100</td><td class="val">+ 4,98 %</td></tr>
+            <tr><td>Semaine 2</td><td>(49 600 − 42 700) ÷ 42 700 × 100</td><td class="val">+ 16,16 %</td></tr>
+            <tr><td>Semaine 3</td><td>(58 800 − 57 800) ÷ 57 800 × 100</td><td class="val">+ 1,73 %</td></tr>
+            <tr><td>Semaine 4</td><td>(61 200 − 63 100) ÷ 63 100 × 100</td><td class="val">− 3,01 %</td></tr>
+            <tr class="t-total"><td>Mois</td><td>(226 500 − 217 800) ÷ 217 800 × 100</td><td class="val">+ 3,99 %</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="res">Oui, l'objectif est atteint (+ 3,99 % pour + 3 % visés).</p>
+        <p class="conclu">Le résultat mensuel est porté par la semaine 2 (+ 16,16 %). En revanche, la semaine 4 est en recul (− 3,01 %) : il faut en rechercher les causes (rupture de stock, affluence, concurrence…) et prévoir une action corrective.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 14 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 14</span>
+    <span class="badge badge-3">⬆⬆⬆ niveau examen</span>
+    <span class="exo-titre-txt">Analyser ses performances sur six mois et la prime sur objectif</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Vous êtes vendeur(se) dans une concession de véhicules d'occasion. Vous percevez une <strong>prime</strong> chaque mois où le <strong>taux de financement à crédit (TFC) atteint au moins un tiers du CA</strong> (33,33 %).
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th></th><th>Février</th><th>Mars</th><th>Avril</th><th>Mai</th><th>Juin</th><th>Juillet</th></tr></thead>
+      <tbody>
+        <tr><td>Véhicules vendus</td><td>10</td><td>8</td><td>10</td><td>12</td><td>11</td><td>13</td></tr>
+        <tr><td>CA (€)</td><td class="num">53 250</td><td class="num">64 210</td><td class="num">78 250</td><td class="num">128 200</td><td class="num">122 230</td><td class="num">87 250</td></tr>
+        <tr><td>Financement à crédit (€)</td><td class="num">12 000</td><td class="num">17 230</td><td class="num">27 560</td><td class="num">31 120</td><td class="num">48 260</td><td class="num">27 250</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Calculez le prix moyen par véhicule vendu pour chaque mois (arrondir à 0,01 €).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le TFC de chaque mois (arrondir à 0,01 %) et indiquez les mois où la prime est versée.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Rédigez un constat de vos performances en trois ou quatre phrases.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">4</span>
+        <p>Proposez deux actions pour toucher la prime plus souvent.</p>
+      </div>
+    </div>
+    <div class="ordre-grandeur"><strong>Ordre de grandeur :</strong> le prix moyen est compris entre 5 000 € et 12 000 €. Le TFC varie entre 20 % et 40 %.</div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span><span class="c-num" style="margin-left:-2px">2</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Mois</th><th>Prix moyen</th><th>TFC</th><th>Prime</th></tr></thead>
+          <tbody>
+            <tr><td>Février</td><td>53 250 ÷ 10 = 5 325,00 €</td><td>12 000 ÷ 53 250 × 100 = 22,54 %</td><td class="val">non</td></tr>
+            <tr><td>Mars</td><td>64 210 ÷ 8 = 8 026,25 €</td><td>17 230 ÷ 64 210 × 100 = 26,83 %</td><td class="val">non</td></tr>
+            <tr><td>Avril</td><td>78 250 ÷ 10 = 7 825,00 €</td><td>27 560 ÷ 78 250 × 100 = 35,22 %</td><td class="val">oui</td></tr>
+            <tr><td>Mai</td><td>128 200 ÷ 12 = 10 683,33 €</td><td>31 120 ÷ 128 200 × 100 = 24,27 %</td><td class="val">non</td></tr>
+            <tr><td>Juin</td><td>122 230 ÷ 11 = 11 111,82 €</td><td>48 260 ÷ 122 230 × 100 = 39,48 %</td><td class="val">oui</td></tr>
+            <tr><td>Juillet</td><td>87 250 ÷ 13 = 6 711,54 €</td><td>27 250 ÷ 87 250 × 100 = 31,23 %</td><td class="val">non</td></tr>
+          </tbody>
+        </table>
+        <p class="res">La prime est versée 2 mois sur 6 : avril et juin.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p class="conclu">Le CA et le nombre de véhicules vendus progressent globalement sur la période, ce qui montre une montée en compétences. Le prix moyen augmente jusqu'en juin (ventes de gamme supérieure), puis baisse nettement en juillet. En revanche, le TFC reste inférieur à l'objectif 4 mois sur 6 : le financement n'est pas assez proposé.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">4</span>
+        <p class="conclu">Proposer systématiquement une simulation de financement lors de chaque vente, présenter la mensualité dès l'argumentation, se former aux offres de crédit de la concession, suivre chaque semaine son TFC pour réagir avant la fin du mois.</p>
+      </div>
+    </div>
+  </div>
+</details>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     BLOC 5 – SUJETS COMPLETS
+══════════════════════════════════════════════════════════ -->
+<hr class="section-sep">
+<div class="bloc-titre" id="complet">
+  <span class="icone">🏁</span>
+  <h2>Bloc 5 – Sujets complets</h2>
+</div>
+
+<div class="memo">
+  <div class="memo-titre">🗂 mémo méthode – 4 étapes</div>
+  <code>① Financement : vérifier montant et durée → choisir la solution → calculer le coût</code>
+  <code>② Livraison : comparer les prestataires (fiabilité, prix, délais) → informer le client</code>
+  <code>③ Suivi : calculer la date limite → relancer si elle est dépassée</code>
+  <code>④ Activité : calculer les indicateurs → comparer aux objectifs → proposer des actions</code>
+  <p class="note">Chaque calcul doit être suivi d'une phrase d'interprétation ou de recommandation.</p>
+</div>
+
+<!-- EX 15 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 15</span>
+    <span class="badge badge-exam">🏁 sujet complet</span>
+    <span class="exo-titre-txt">Financement et livraison d'un vélo électrique</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Vous travaillez au rayon cycles du magasin <em>Sport Horizon</em> de Villeneuve-lès-Béziers. Le <strong>lundi 9 novembre</strong>, Mme Nadia Ferrand achète un <strong>vélo électrique à 1 799 €</strong> et un <strong>home trainer à 349 €</strong>. Elle souhaite :<br><br>
+      • payer en plusieurs mensualités, <strong>200 € maximum par mois</strong>, au coût le plus faible possible ;<br>
+      • être livrée à domicile <strong>avant le samedi 14 novembre</strong>.<br><br>
+      Elle précise qu'elle a déménagé le mois dernier et que son RIB porte encore son ancienne adresse.<br><br>
+      <strong>Solutions de financement :</strong> 3 ou 4 fois sans frais par CB de 100 à 1 500 € ; crédit de 200 à 3 000 € sur 5 à 60 mois (TAEG 9,8 %), pièces : carte de fidélité, pièce d'identité, RIB au nom et à l'adresse actuelle (sinon justificatif de domicile de moins de 3 mois).
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Simulation de crédit</th><th>10 mois</th><th>12 mois</th><th>15 mois</th><th>18 mois</th></tr></thead>
+      <tbody>
+        <tr><td>Mensualité</td><td class="num">224,15 €</td><td class="num">188,23 €</td><td class="num">152,32 €</td><td class="num">128,40 €</td></tr>
+      </tbody>
+    </table>
+    <table class="tableau-donnees">
+      <thead><tr><th>Transporteur</th><th>Prix</th><th>Prise de RDV et livraison</th><th>Service</th><th>Taux de litiges</th></tr></thead>
+      <tbody>
+        <tr><td>Cyclo'Liv</td><td class="num">39 €</td><td>sous 2 jours ouvrés</td><td>spécialiste vélos, mise en service incluse</td><td>1 %</td></tr>
+        <tr><td>Express34</td><td class="num">29 €</td><td>sous 5 jours ouvrés</td><td>livraison au pas-de-porte</td><td>4 %</td></tr>
+      </tbody>
+    </table>
+    <div class="contexte">
+      Le <strong>mercredi 11 novembre</strong> est un jour férié. La livraison est réglée comptant, à part.
+    </div>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Citez les deux services associés proposés à Mme Ferrand et précisez s'ils sont payants ou gratuits dans ce cas.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Calculez le montant de l'achat. Pourquoi le paiement en 3 ou 4 fois sans frais n'est-il pas possible ?</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Choisissez la durée de crédit adaptée. Calculez le montant total dû et le coût du crédit.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">4</span>
+        <p>Listez les pièces justificatives à demander à Mme Ferrand.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">5</span>
+        <p>Déterminez la date limite de livraison de chaque transporteur. Lequel retenez-vous ? Justifiez.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">6</span>
+        <p>Calculez la somme totale que Mme Ferrand aura payée (crédit et livraison).</p>
+      </div>
+    </div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction complète</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <p class="res">Le financement (payant : crédit au TAEG de 9,8 %) et la livraison à domicile (payante).</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <code>1 799 + 349 = 2 148 €</code>
+        <p class="conclu">Le paiement en 3 ou 4 fois sans frais est limité à 1 500 €. De plus, en 4 fois, chaque échéance (537 €) dépasserait largement les 200 € souhaités.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span>
+        <p>10 mois : 224,15 € &gt; 200 € → exclu. 12, 15 et 18 mois respectent la limite ; la durée la plus courte est la moins coûteuse.</p>
+        <code>Montant total dû = 188,23 × 12 = 2 258,76 €</code>
+        <code>Coût du crédit = 2 258,76 − 2 148 = 110,76 €</code>
+        <p class="res">Crédit sur <strong>12 mois</strong> : coût = <strong>110,76 €</strong></p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">4</span>
+        <p>Carte de fidélité (ou ouverture du compte sur place), pièce d'identité en cours de validité, RIB à son nom et <strong>justificatif de domicile de moins de 3 mois</strong>, puisque l'adresse du RIB n'est plus la bonne.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">5</span>
+        <code>Cyclo'Liv : mar. 10 (1) – [mer. 11 férié] – jeu. 12 (2) → jeudi 12 novembre</code>
+        <code>Express34 : mar. 10 – jeu. 12 – ven. 13 – lun. 16 – mar. 17 → mardi 17 novembre</code>
+        <p class="res">Cyclo'Liv est retenu.</p>
+        <p class="conclu">C'est le seul transporteur qui livre avant le samedi 14 novembre. Il est aussi plus fiable (1 % de litiges) et assure la mise en service du vélo. Les 10 € d'écart de prix sont justifiés.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">6</span>
+        <code>2 258,76 + 39 = 2 297,76 €</code>
+        <p class="res">Total payé par Mme Ferrand = <strong>2 297,76 €</strong></p>
+      </div>
+    </div>
+  </div>
+</details>
+
+<!-- EX 16 -->
+<details class="exo-card">
+  <summary class="exo-header">
+    <span class="exo-num">Ex. 16</span>
+    <span class="badge badge-exam">🏁 sujet complet</span>
+    <span class="exo-titre-txt">Suivi d'une livraison et bilan mensuel de l'activité</span>
+    <span class="chevron">▼</span>
+  </summary>
+  <div class="exo-body">
+    <div class="contexte">
+      Vous êtes vendeur(se) au rayon fitness de <em>Sport Horizon</em>. Votre responsable vous demande de traiter un retard de livraison puis de préparer votre entretien mensuel.<br><br>
+      <strong>Partie A – Suivi de livraison</strong><br>
+      Le <strong>lundi 9 novembre</strong>, vous avez transmis à VIR un ordre de livraison pour un vélo d'appartement. Le contrat prévoit une prise de rendez-vous sous <strong>3 jours ouvrés</strong>. Le <strong>mercredi 11 novembre</strong> est férié. Le <strong>lundi 16 novembre</strong>, le client vous appelle : il n'a été contacté par personne.<br><br>
+      <strong>Partie B – Bilan de novembre</strong>
+    </div>
+    <table class="tableau-donnees">
+      <thead><tr><th>Indicateur</th><th>Novembre N</th><th>Objectif</th></tr></thead>
+      <tbody>
+        <tr><td>Clients servis</td><td class="num">1 250</td><td rowspan="2">taux d'encartés de 40 %</td></tr>
+        <tr><td>Clients encartés</td><td class="num">425</td></tr>
+        <tr><td>Dossiers de financement (4 semaines)</td><td class="num">32</td><td>10 par semaine</td></tr>
+        <tr><td>CA du rayon</td><td class="num">186 400 €</td><td>+ 5 % par rapport à novembre N-1 (178 000 €)</td></tr>
+        <tr><td>Montant financé à crédit</td><td class="num">52 400 €</td><td>TFC d'au moins un tiers (33,33 %)</td></tr>
+      </tbody>
+    </table>
+    <div class="questions">
+      <div class="question">
+        <span class="q-num">1</span>
+        <p>Partie A : déterminez la date limite de prise de rendez-vous. Une relance est-elle justifiée ?</p>
+      </div>
+      <div class="question">
+        <span class="q-num">2</span>
+        <p>Partie A : indiquez à qui le client doit s'adresser en cas de problème de livraison, et pourquoi.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">3</span>
+        <p>Partie B : calculez le taux d'encartés, le nombre moyen de dossiers par semaine, le taux d'évolution du CA (0,01 %) et le TFC (0,01 %).</p>
+      </div>
+      <div class="question">
+        <span class="q-num">4</span>
+        <p>Partie B : comparez chaque résultat à son objectif.</p>
+      </div>
+      <div class="question">
+        <span class="q-num">5</span>
+        <p>Rédigez un court compte rendu à votre responsable présentant vos résultats et trois actions d'amélioration.</p>
+      </div>
+    </div>
+    <button class="btn-corrige" onclick="toggleCorr(this)">✅ Voir la correction complète</button>
+    <div class="correction">
+      <div class="corr-etape">
+        <span class="c-num">1</span>
+        <code>mar. 10 (1) – [mer. 11 férié] – jeu. 12 (2) – ven. 13 (3) → vendredi 13 novembre</code>
+        <p class="res">Oui : le lundi 16 novembre, la date limite est dépassée. Il faut relancer VIR.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">2</span>
+        <p class="conclu">Le client s'adresse au magasin, avec qui il a conclu le contrat de vente. Le magasin est responsable de la bonne exécution de ce contrat, même lorsque la livraison est confiée à un transporteur. Le vendeur reste son interlocuteur principal.</p>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">3</span><span class="c-num" style="margin-left:-2px">4</span>
+        <table class="tableau-corr">
+          <thead><tr><th>Indicateur</th><th>Calcul</th><th>Résultat</th><th>Objectif atteint ?</th></tr></thead>
+          <tbody>
+            <tr><td>Taux d'encartés</td><td>425 ÷ 1 250 × 100</td><td class="val">34 %</td><td>non (40 %)</td></tr>
+            <tr><td>Dossiers / semaine</td><td>32 ÷ 4</td><td class="val">8</td><td>non (10)</td></tr>
+            <tr><td>Évolution du CA</td><td>(186 400 − 178 000) ÷ 178 000 × 100</td><td class="val">+ 4,72 %</td><td>non (+ 5 %), de peu</td></tr>
+            <tr><td>TFC</td><td>52 400 ÷ 186 400 × 100</td><td class="val">28,11 %</td><td>non (33,33 %)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="corr-etape">
+        <span class="c-num">5</span>
+        <p style="font-style:italic;color:#2f5e3e;font-size:13px;line-height:1.9;border:1px solid #c8e8d2;background:#ffffff;padding:14px;border-radius:5px;">
+          <strong>Compte rendu d'activité – novembre</strong><br>
+          <br>
+          <strong>À :</strong> responsable du rayon fitness<br>
+          <strong>De :</strong> [Prénom Nom], vendeur(se)<br>
+          <strong>Objet :</strong> bilan de mes performances de novembre<br>
+          <br>
+          Le CA du rayon atteint 186 400 €, en hausse de 4,72 % par rapport à novembre N-1, légèrement en dessous de l'objectif de + 5 %. Le taux d'encartés est de 34 % (objectif 40 %), j'ai monté 8 dossiers de financement par semaine (objectif 10) et le taux de financement à crédit est de 28,11 % (objectif 33,33 %).<br>
+          <br>
+          Pour progresser, je propose : 1) de présenter systématiquement la carte de fidélité en fin de vente ; 2) de proposer une simulation de financement pour tout achat supérieur à 200 € ; 3) de suivre une formation sur les offres de crédit du magasin.<br>
+          <br>
+          Par ailleurs, j'ai relancé le transporteur VIR le 16 novembre pour un retard de prise de rendez-vous et j'en ai informé le client.
+        </p>
+      </div>
+    </div>
+  </div>
+</details>
+
+</main>
+
+<footer class="site-footer">
+  Bac pro MCV – Bloc 2 « Suivre les ventes » &nbsp;|&nbsp; 16 exercices progressifs – Mettre en œuvre les services associés
+</footer>
+
+<script>
+function toggleCorr(btn) {
+  const corr = btn.nextElementSibling;
+  const isVisible = corr.classList.contains('visible');
+  corr.classList.toggle('visible', !isVisible);
+  btn.textContent = isVisible ? '✅ Voir la correction' : '🔒 Masquer la correction';
+}
+</script>
+
+</body>
+</html>
